@@ -221,6 +221,33 @@ Plex.prototype.processEvent = function(self, event, sensor) {
             return;
         }
     }
+    if (sensor.Content_rated
+        && sensor.Content_rated.length > 0)
+    {
+        var matches = false;
+        self.debugLog("Testing Content_rated for sensor: "+sensor.name);
+        if (!event.Metadata.contentRating
+            || event.Metadata.contentRating.length == 0)
+        {
+            self.debugLog("Event doesn't match contentRating for sensor: "+sensor.name);
+            return;
+        }
+        
+        for (var Content_rated of event.Metadata.contentRating)
+        {
+            if (sensor.Content_rated.indexOf(Content_rated.tag.toLowerCase()) > -1)
+            {
+                self.debugLog("Matched Content_rated: "+Content_rated.tag);
+                matches = true;
+            }
+        }
+        
+        if (!matches)
+        {
+            self.debugLog("Event doesn't match Content_rated for sensor: "+sensor.name);
+            return;
+        }
+    }
     if (sensor.customFilters)
     {
         for (var filterPath of Object.keys(sensor.customFilters))
